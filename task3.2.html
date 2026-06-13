@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STORYBOARD DESIGN STUDIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --cream: #ede8d8;
+    --amber: #e8a020;
+    --rust: #c44a1c;
+    --teal: #1a6b6b;
+    --slate: #2a3040;
+    --gold: #d4a438;
+    --light-gold: #f0d080;
+    --panel-bg: #faf7f0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.3;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--slate);
+    color: var(--paper);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--amber);
+  }
+
+  .header-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 340px;
+  }
+
+  .header-left {
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 2px;
+    background: var(--amber);
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(58px, 8vw, 110px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    margin-bottom: 24px;
+  }
+
+  h1 span {
+    color: var(--amber);
+    display: block;
+  }
+
+  .header-desc {
+    font-size: 12px;
+    line-height: 1.8;
+    color: #aab0bc;
+    max-width: 380px;
+  }
+
+  .header-right {
+    position: relative;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  /* Animated storyboard frames in header */
+  .header-frames {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    padding: 3px;
+  }
+
+  .mini-frame {
+    background: var(--slate);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    animation: framePulse 4s ease-in-out infinite;
+  }
+
+  .mini-frame:nth-child(1) { animation-delay: 0s; background: #1e2a3a; }
+  .mini-frame:nth-child(2) { animation-delay: 0.8s; background: #162030; }
+  .mini-frame:nth-child(3) { animation-delay: 1.6s; background: #1a2535; }
+  .mini-frame:nth-child(4) { animation-delay: 2.4s; background: #12182a; }
+
+  @keyframes framePulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+  }
+
+  .mini-frame svg {
+    opacity: 0.5;
+    width: 60%;
+  }
+
+  .frame-num {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--amber);
+    opacity: 0.8;
+  }
+
+  .arrow-connector {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--ink);
+    font-weight: bold;
+    z-index: 5;
+  }
+
+  .arrow-h { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+  /* INTRO STRIP */
+  .intro-strip {
+    background: var(--amber);
+    padding: 14px 60px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    overflow: hidden;
+  }
+
+  .strip-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.3em;
+    color: var(--ink);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .strip-items {
+    display: flex;
+    gap: 40px;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .strip-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink);
+    opacity: 0.75;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .strip-item::before {
+    content: '▸';
+    font-size: 14px;
+    opacity: 1;
+  }
+
+  /* MAIN CONTENT */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 70px 40px;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 50px;
+  }
+
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: var(--cream);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  .section-rule {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--ink), transparent);
+    margin-bottom: 6px;
+  }
+
+  /* STORYBOARD GRID */
+  .storyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 3px solid var(--ink);
+    margin-bottom: 80px;
+    position: relative;
+  }
+
+  .sb-frame {
+    border: 2px solid var(--ink);
+    background: var(--panel-bg);
+    position: relative;
+    transition: transform 0.3s ease, z-index 0s;
+    cursor: pointer;
+  }
+
+  .sb-frame:hover {
+    transform: scale(1.04) translateZ(0);
+    z-index: 10;
+    box-shadow: 8px 8px 0 var(--amber), 12px 12px 0 var(--ink);
+  }
+
+  .frame-visual {
+    aspect-ratio: 16/9;
+    position: relative;
+    overflow: hidden;
+    background: var(--slate);
+  }
+
+  /* Individual frame illustrations */
+  .frame-visual svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .frame-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .frame-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+  }
+
+  .frame-tag {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #667;
+    background: rgba(255,255,255,0.08);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .frame-body {
+    padding: 16px;
+  }
+
+  .frame-scene-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .frame-desc {
+    font-size: 10px;
+    line-height: 1.7;
+    color: #555;
+  }
+
+  .frame-meta {
+    padding: 10px 16px;
+    background: var(--cream);
+    border-top: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    gap: 16px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  .frame-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ARROW BETWEEN FRAMES */
+  .frame-arrow {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 40px;
+    height: 40px;
+    background: var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    border-radius: 50%;
+    animation: arrowBounce 2s ease-in-out infinite;
+  }
+
+  @keyframes arrowBounce {
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    50% { transform: translateY(-50%) translateX(4px); }
+  }
+
+  /* KEY FOCUS AREAS */
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+    margin-bottom: 80px;
+    background: var(--ink);
+    border: 3px solid var(--ink);
+  }
+
+  .focus-card {
+    background: var(--panel-bg);
+    padding: 36px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease;
+  }
+
+  .focus-card:hover {
+    background: var(--slate);
+    color: var(--paper);
+  }
+
+  .focus-card:hover .focus-title,
+  .focus-card:hover .focus-text { color: var(--paper); }
+  .focus-card:hover .focus-icon-wrap { background: var(--amber); }
+  .focus-card:hover .focus-num { color: rgba(255,255,255,0.1); }
+
+  .focus-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--amber);
+  }
+
+  .focus-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: rgba(0,0,0,0.05);
+    position: absolute;
+    right: 20px;
+    top: -10px;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .focus-icon-wrap {
+    width: 48px;
+    height: 48px;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    transition: background 0.3s;
+  }
+
+  .focus-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    color: var(--ink);
+    transition: color 0.3s;
+  }
+
+  .focus-text {
+    font-size: 11px;
+    line-height: 1.9;
+    color: #555;
+    transition: color 0.3s;
+    max-width: 340px;
+  }
+
+  /* TOOLS SECTION */
+  .tools-section {
+    margin-bottom: 80px;
+  }
+
+  .tools-row {
+    display: flex;
+    gap: 0;
+    border: 3px solid var(--ink);
+  }
+
+  .tool-card {
+    flex: 1;
+    padding: 40px 32px;
+    border-right: 2px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s, color 0.25s;
+    cursor: pointer;
+  }
+
+  .tool-card:last-child { border-right: none; }
+
+  .tool-card:hover { background: var(--ink); }
+  .tool-card:hover .tool-name { color: var(--amber); }
+  .tool-card:hover .tool-type,
+  .tool-card:hover .tool-desc { color: rgba(255,255,255,0.6); }
+  .tool-card:hover .tool-dot { background: var(--amber); }
+  .tool-card:hover .tool-icon { color: var(--amber); }
+
+  .tool-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--teal);
+    border-radius: 50%;
+    margin-bottom: 20px;
+    transition: background 0.25s;
+  }
+
+  .tool-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+    color: var(--ink);
+    transition: color 0.25s;
+  }
+
+  .tool-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: color 0.25s;
+  }
+
+  .tool-type {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 14px;
+    transition: color 0.25s;
+  }
+
+  .tool-desc {
+    font-size: 11px;
+    line-height: 1.8;
+    color: #666;
+    transition: color 0.25s;
+  }
+
+  /* USER JOURNEY FLOW */
+  .journey-section {
+    margin-bottom: 80px;
+  }
+
+  .journey-flow {
+    display: flex;
+    gap: 0;
+    position: relative;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .journey-step {
+    flex: 1;
+    min-width: 180px;
+    border: 2px solid var(--ink);
+    background: var(--panel-bg);
+    position: relative;
+  }
+
+  .journey-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--rust);
+    z-index: 5;
+    font-family: 'Bebas Neue', sans-serif;
+  }
+
+  .journey-step-top {
+    background: var(--slate);
+    padding: 16px 18px 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .step-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    color: var(--paper);
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+  }
+
+  .journey-step-body {
+    padding: 16px 18px;
+  }
+
+  .step-desc {
+    font-size: 10px;
+    line-height: 1.8;
+    color: #555;
+  }
+
+  .step-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 10px;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 1px solid var(--teal);
+    color: var(--teal);
+    border-radius: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 50px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 4px solid var(--amber);
+  }
+
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-tagline {
+    font-size: 11px;
+    color: #667;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .footer-right {
+    text-align: right;
+  }
+
+  .footer-right p {
+    font-size: 10px;
+    color: #667;
+    line-height: 2;
+    letter-spacing: 0.1em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .sb-frame, .focus-card, .tool-card, .journey-step {
+    animation: slideUp 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  .sb-frame:nth-child(1) { animation-delay: 0.1s; }
+  .sb-frame:nth-child(2) { animation-delay: 0.2s; }
+  .sb-frame:nth-child(3) { animation-delay: 0.3s; }
+  .sb-frame:nth-child(4) { animation-delay: 0.4s; }
+  .sb-frame:nth-child(5) { animation-delay: 0.5s; }
+  .sb-frame:nth-child(6) { animation-delay: 0.6s; }
+
+  .focus-card:nth-child(1) { animation-delay: 0.1s; }
+  .focus-card:nth-child(2) { animation-delay: 0.2s; }
+  .focus-card:nth-child(3) { animation-delay: 0.3s; }
+  .focus-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .tool-card:nth-child(1) { animation-delay: 0.1s; }
+  .tool-card:nth-child(2) { animation-delay: 0.2s; }
+  .tool-card:nth-child(3) { animation-delay: 0.3s; }
+  .tool-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .journey-step:nth-child(1) { animation-delay: 0.1s; }
+  .journey-step:nth-child(2) { animation-delay: 0.25s; }
+  .journey-step:nth-child(3) { animation-delay: 0.4s; }
+  .journey-step:nth-child(4) { animation-delay: 0.55s; }
+  .journey-step:nth-child(5) { animation-delay: 0.7s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .header-inner { grid-template-columns: 1fr; }
+    .header-right { display: none; }
+    .storyboard-grid { grid-template-columns: 1fr 1fr; }
+    .focus-grid { grid-template-columns: 1fr; }
+    .tools-row { flex-wrap: wrap; }
+    .tool-card { min-width: 45%; border-bottom: 2px solid var(--ink); }
+    .journey-flow { flex-direction: column; }
+    .journey-step:not(:last-child)::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="eyebrow">Creative Studio / Visual Narrative</div>
+      <h1>STORY<span>BOARD</span></h1>
+      <p class="header-desc">Design visual narratives and user journeys. Break concepts into compelling scenes. Collaborate with animators for flawless execution.</p>
+    </div>
+    <div class="header-right">
+      <div class="header-frames">
+        <div class="mini-frame">
+          <span class="frame-num">01</span>
+          <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="25" r="15" fill="#e8a020" opacity="0.6"/>
+            <rect x="50" y="15" width="35" height="4" rx="2" fill="#aaa" opacity="0.5"/>
+            <rect x="50" y="24" width="25" height="4" rx="2" fill="#aaa" opacity="0.3"/>
+            <rect x="10" y="45" width="80" height="2" rx="1" fill="#444"/>
+          </svg>
+        </div>
+        <div class="mini-frame">
+          <span class="frame-num">02</span>
+          <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="35" height="35" rx="3" fill="#1a6b6b" opacity="0.5"/>
+            <rect x="55" y="10" width="35" height="35" rx="3" fill="#c44a1c" opacity="0.4"/>
+            <line x1="10" y1="50" x2="90" y2="50" stroke="#444" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="mini-frame">
+          <span class="frame-num">03</span>
+          <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 45 Q30 10 50 30 Q70 50 90 15" stroke="#e8a020" stroke-width="3" fill="none"/>
+            <circle cx="10" cy="45" r="4" fill="#e8a020"/>
+            <circle cx="50" cy="30" r="4" fill="#e8a020"/>
+            <circle cx="90" cy="15" r="4" fill="#e8a020"/>
+          </svg>
+        </div>
+        <div class="mini-frame">
+          <span class="frame-num">04</span>
+          <svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="60" height="25" rx="4" fill="none" stroke="#aaa" stroke-width="2"/>
+            <polygon points="50,10 60,25 40,25" fill="#e8a020" opacity="0.8"/>
+            <rect x="30" y="50" width="40" height="3" rx="1" fill="#444" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="arrow-connector arrow-h">→</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SCROLLING STRIP -->
+<div class="intro-strip">
+  <span class="strip-label">WORKFLOW ▸</span>
+  <div class="strip-items">
+    <span class="strip-item">Visual Scene Breakdown</span>
+    <span class="strip-item">User Journey Mapping</span>
+    <span class="strip-item">Animation Sequencing</span>
+    <span class="strip-item">Frame-by-Frame Narration</span>
+    <span class="strip-item">Creative Collaboration</span>
+    <span class="strip-item">Transition Design</span>
+    <span class="strip-item">Visual Scene Breakdown</span>
+    <span class="strip-item">User Journey Mapping</span>
+    <span class="strip-item">Animation Sequencing</span>
+    <span class="strip-item">Frame-by-Frame Narration</span>
+    <span class="strip-item">Creative Collaboration</span>
+    <span class="strip-item">Transition Design</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- STORYBOARD FRAMES SECTION -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Visual Scenes & Frames</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="storyboard-grid">
+
+      <!-- Frame 1 -->
+      <div class="sb-frame">
+        <div class="frame-header">
+          <span class="frame-label">FRAME 01</span>
+          <span class="frame-tag">ESTABLISHING SHOT</span>
+        </div>
+        <div class="frame-visual">
+          <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="320" height="180" fill="#1e2535"/>
+            <!-- Sky gradient -->
+            <rect width="320" height="100" fill="#0d1520"/>
+            <!-- Stars -->
+            <circle cx="40" cy="20" r="1.5" fill="white" opacity="0.8"/>
+            <circle cx="80" cy="15" r="1" fill="white" opacity="0.6"/>
+            <circle cx="160" cy="10" r="1.5" fill="white" opacity="0.9"/>
+            <circle cx="220" cy="25" r="1" fill="white" opacity="0.7"/>
+            <circle cx="290" cy="12" r="1.5" fill="white" opacity="0.5"/>
+            <circle cx="110" cy="35" r="1" fill="white" opacity="0.8"/>
+            <circle cx="250" cy="40" r="1.5" fill="#e8a020" opacity="0.9"/>
+            <!-- City silhouette -->
+            <rect x="0" y="85" width="320" height="95" fill="#0d1a28"/>
+            <rect x="20" y="70" width="30" height="45" fill="#12202e"/>
+            <rect x="25" y="60" width="20" height="15" fill="#12202e"/>
+            <rect x="60" y="55" width="40" height="60" fill="#0e1c2c"/>
+            <rect x="65" y="45" width="30" height="15" fill="#0e1c2c"/>
+            <rect x="110" y="65" width="25" height="50" fill="#111e2d"/>
+            <rect x="145" y="50" width="50" height="65" fill="#0c1a2a"/>
+            <rect x="150" y="38" width="40" height="16" fill="#0c1a2a"/>
+            <rect x="205" y="60" width="35" height="55" fill="#0f1d2b"/>
+            <rect x="250" y="70" width="45" height="45" fill="#111f2e"/>
+            <rect x="255" y="58" width="35" height="16" fill="#111f2e"/>
+            <!-- Windows glowing -->
+            <rect x="30" y="74" width="5" height="5" fill="#e8a020" opacity="0.8"/>
+            <rect x="68" y="60" width="5" height="5" fill="#e8a020" opacity="0.6"/>
+            <rect x="78" y="72" width="5" height="5" fill="white" opacity="0.5"/>
+            <rect x="152" y="55" width="5" height="5" fill="#e8a020" opacity="0.7"/>
+            <rect x="165" y="67" width="5" height="5" fill="white" opacity="0.4"/>
+            <rect x="210" y="68" width="5" height="5" fill="#e8a020" opacity="0.6"/>
+            <!-- Ground glow -->
+            <rect x="0" y="140" width="320" height="40" fill="#0a1520" opacity="0.9"/>
+            <!-- Action indicator -->
+            <text x="8" y="174" font-family="monospace" font-size="9" fill="#e8a020" opacity="0.9">INT. CITY NIGHT — ESTABLISHING</text>
+          </svg>
+        </div>
+        <div class="frame-body">
+          <div class="frame-scene-title">Opening: The City at Night</div>
+          <div class="frame-desc">Wide establishing shot. The city glitters below. We hold on the skyline as ambient music swells. This is where the story begins.</div>
+        </div>
+        <div class="frame-meta">
+          <span>⏱ 0:00–0:04</span>
+          <span>📷 Wide</span>
+          <span>🎵 Ambient</span>
+        </div>
+      </div>
+
+      <!-- Frame 2 -->
+      <div class="sb-frame">
+        <div class="frame-header">
+          <span class="frame-label">FRAME 02</span>
+          <span class="frame-tag">CLOSE-UP</span>
+        </div>
+        <div class="frame-visual">
+          <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="320" height="180" fill="#1a2030"/>
+            <!-- Face shape -->
+            <ellipse cx="160" cy="85" rx="70" ry="80" fill="#2a3040"/>
+            <!-- Face features -->
+            <ellipse cx="160" cy="82" rx="55" ry="65" fill="#3a4050"/>
+            <!-- Eyes -->
+            <ellipse cx="140" cy="72" rx="12" ry="8" fill="#0d1520"/>
+            <ellipse cx="180" cy="72" rx="12" ry="8" fill="#0d1520"/>
+            <circle cx="140" cy="72" r="6" fill="#1a6b6b"/>
+            <circle cx="180" cy="72" r="6" fill="#1a6b6b"/>
+            <circle cx="142" cy="70" r="2" fill="white" opacity="0.9"/>
+            <circle cx="182" cy="70" r="2" fill="white" opacity="0.9"/>
+            <!-- Nose -->
+            <path d="M155 82 Q160 95 165 82" stroke="#4a5060" stroke-width="2" fill="none"/>
+            <!-- Mouth - slightly open in surprise -->
+            <path d="M145 105 Q160 118 175 105" stroke="#c44a1c" stroke-width="3" fill="none"/>
+            <!-- Eyebrows raised -->
+            <path d="M128 62 Q140 56 152 60" stroke="#5a6070" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M168 60 Q180 56 192 62" stroke="#5a6070" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Light effect on face -->
+            <ellipse cx="160" cy="50" rx="80" ry="30" fill="#e8a020" opacity="0.08"/>
+            <!-- Background glow -->
+            <circle cx="160" cy="85" r="100" fill="#e8a020" opacity="0.05"/>
+            <text x="8" y="174" font-family="monospace" font-size="9" fill="#e8a020" opacity="0.9">CU. PROTAGONIST — REACTION SHOT</text>
+          </svg>
+        </div>
+        <div class="frame-body">
+          <div class="frame-scene-title">Character: First Reaction</div>
+          <div class="frame-desc">Extreme close-up on the protagonist's face. Eyes widen. A moment of realization. The camera holds — silence before the storm.</div>
+        </div>
+        <div class="frame-meta">
+          <span>⏱ 0:04–0:07</span>
+          <span>📷 ECU</span>
+          <span>🎵 Silence</span>
+        </div>
+      </div>
+
+      <!-- Frame 3 -->
+      <div class="sb-frame">
+        <div class="frame-header">
+          <span class="frame-label">FRAME 03</span>
+          <span class="frame-tag">ACTION</span>
+        </div>
+        <div class="frame-visual">
+          <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="320" height="180" fill="#0e1820"/>
+            <!-- Motion blur lines -->
+            <line x1="0" y1="60" x2="200" y2="60" stroke="#e8a020" stroke-width="1" opacity="0.2"/>
+            <line x1="0" y1="90" x2="280" y2="90" stroke="#e8a020" stroke-width="2" opacity="0.15"/>
+            <line x1="0" y1="120" x2="220" y2="120" stroke="#e8a020" stroke-width="1" opacity="0.1"/>
+            <!-- Running figure (simple silhouette) -->
+            <!-- Body -->
+            <ellipse cx="200" cy="65" rx="12" ry="15" fill="#2a3545"/>
+            <!-- Head -->
+            <circle cx="200" cy="45" r="12" fill="#2a3545"/>
+            <!-- Legs running -->
+            <line x1="200" y1="80" x2="180" y2="115" stroke="#2a3545" stroke-width="8" stroke-linecap="round"/>
+            <line x1="200" y1="80" x2="225" y2="108" stroke="#2a3545" stroke-width="8" stroke-linecap="round"/>
+            <!-- Arms -->
+            <line x1="195" y1="70" x2="170" y2="85" stroke="#2a3545" stroke-width="6" stroke-linecap="round"/>
+            <line x1="205" y1="70" x2="235" y2="72" stroke="#2a3545" stroke-width="6" stroke-linecap="round"/>
+            <!-- Motion trail -->
+            <ellipse cx="155" cy="90" rx="40" ry="12" fill="#e8a020" opacity="0.07"/>
+            <ellipse cx="120" cy="90" rx="25" ry="8" fill="#e8a020" opacity="0.04"/>
+            <!-- Speed lines -->
+            <line x1="50" y1="45" x2="160" y2="45" stroke="white" stroke-width="1" opacity="0.15"/>
+            <line x1="30" y1="55" x2="155" y2="55" stroke="white" stroke-width="2" opacity="0.1"/>
+            <line x1="60" y1="100" x2="170" y2="100" stroke="white" stroke-width="1" opacity="0.12"/>
+            <line x1="20" y1="110" x2="160" y2="110" stroke="white" stroke-width="2" opacity="0.08"/>
+            <!-- Ground shadows -->
+            <ellipse cx="200" cy="155" rx="35" ry="8" fill="black" opacity="0.5"/>
+            <rect x="0" y="145" width="320" height="35" fill="#0a1218"/>
+            <text x="8" y="174" font-family="monospace" font-size="9" fill="#e8a020" opacity="0.9">MED. SHOT — HIGH SPEED CHASE</text>
+          </svg>
+        </div>
+        <div class="frame-body">
+          <div class="frame-scene-title">The Chase Begins</div>
+          <div class="frame-desc">Dynamic action. Motion blur, speed lines. The protagonist runs through narrow corridors. Tension mounts with every cut.</div>
+        </div>
+        <div class="frame-meta">
+          <span>⏱ 0:07–0:14</span>
+          <span>📷 Tracking</span>
+          <span>🎵 Intense</span>
+        </div>
+      </div>
+
+      <!-- Frame 4 -->
+      <div class="sb-frame">
+        <div class="frame-header">
+          <span class="frame-label">FRAME 04</span>
+          <span class="frame-tag">TRANSITION</span>
+        </div>
+        <div class="frame-visual">
+          <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="splitGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#1a6b6b"/>
+                <stop offset="45%" stop-color="#0d1520"/>
+                <stop offset="55%" stop-color="#0d1520"/>
+                <stop offset="100%" stop-color="#c44a1c"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="180" fill="url(#splitGrad)"/>
+            <!-- Left scene hint -->
+            <rect x="10" y="30" width="120" height="80" rx="4" fill="#1a6b6b" opacity="0.3"/>
+            <circle cx="70" cy="70" r="25" fill="#1a6b6b" opacity="0.4"/>
+            <!-- Right scene hint -->
+            <rect x="190" y="30" width="120" height="80" rx="4" fill="#c44a1c" opacity="0.3"/>
+            <rect x="210" y="45" width="80" height="50" rx="3" fill="#c44a1c" opacity="0.3"/>
+            <!-- Center split line -->
+            <line x1="160" y1="0" x2="160" y2="180" stroke="white" stroke-width="3" opacity="0.9"/>
+            <!-- Arrow split -->
+            <polygon points="155,85 145,75 145,95" fill="white" opacity="0.8"/>
+            <polygon points="165,85 175,75 175,95" fill="white" opacity="0.8"/>
+            <!-- Labels -->
+            <text x="40" y="130" font-family="monospace" font-size="11" fill="white" opacity="0.7">PAST</text>
+            <text x="225" y="130" font-family="monospace" font-size="11" fill="white" opacity="0.7">PRESENT</text>
+            <text x="8" y="174" font-family="monospace" font-size="9" fill="#e8a020" opacity="0.9">SPLIT SCREEN — TIME TRANSITION</text>
+          </svg>
+        </div>
+        <div class="frame-body">
+          <div class="frame-scene-title">Split Screen: Past vs Present</div>
+          <div class="frame-desc">Visual transition using split screen. Left: the memory. Right: the reality. The divide between them tells the whole story.</div>
+        </div>
+        <div class="frame-meta">
+          <span>⏱ 0:14–0:18</span>
+          <span>📷 Split</span>
+          <span>🎵 Crossfade</span>
+        </div>
+      </div>
+
+      <!-- Frame 5 -->
+      <div class="sb-frame">
+        <div class="frame-header">
+          <span class="frame-label">FRAME 05</span>
+          <span class="frame-tag">DIALOGUE</span>
+        </div>
+        <div class="frame-visual">
+          <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="320" height="180" fill="#1c2030"/>
+            <!-- Character A -->
+            <ellipse cx="80" cy="80" rx="28" ry="35" fill="#2a3545"/>
+            <circle cx="80" cy="45" r="20" fill="#2a3545"/>
+            <!-- Character B -->
+            <ellipse cx="240" cy="80" rx="28" ry="35" fill="#354045"/>
+            <circle cx="240" cy="45" r="20" fill="#354045"/>
+            <!-- Speech bubble A -->
+            <rect x="20" y="10" width="100" height="30" rx="8" fill="#e8a020" opacity="0.9"/>
+            <polygon points="55,40 65,40 55,55" fill="#e8a020" opacity="0.9"/>
+            <text x="34" y="30" font-family="monospace" font-size="9" fill="#0d1520">We need to go.</text>
+            <!-- Speech bubble B -->
+            <rect x="200" y="10" width="110" height="30" rx="8" fill="#1a6b6b" opacity="0.9"/>
+            <polygon points="265,40 255,40 265,55" fill="#1a6b6b" opacity="0.9"/>
+            <text x="208" y="30" font-family="monospace" font-size="9" fill="white">I know. Trust me.</text>
+            <!-- Ground -->
+            <rect x="0" y="140" width="320" height="40" fill="#0d1520"/>
+            <!-- Shadows -->
+            <ellipse cx="80" cy="150" rx="35" ry="8" fill="black" opacity="0.4"/>
+            <ellipse cx="240" cy="150" rx="35" ry="8" fill="black" opacity="0.4"/>
+            <text x="8" y="174" font-family="monospace" font-size="9" fill="#e8a020" opacity="0.9">TWO-SHOT — KEY DIALOGUE SCENE</text>
+          </svg>
+        </div>
+        <div class="frame-body">
+          <div class="frame-scene-title">Confrontation Dialogue</div>
+          <div class="frame-desc">Two-shot. Characters face each other. The tension is palpable. Speech bubbles guide voice actors — tone shifts mid-scene.</div>
+        </div>
+        <div class="frame-meta">
+          <span>⏱ 0:18–0:28</span>
+          <span>📷 Two-Shot</span>
+          <span>🎵 Underscore</span>
+        </div>
+      </div>
+
+      <!-- Frame 6 -->
+      <div class="sb-frame">
+        <div class="frame-header">
+          <span class="frame-label">FRAME 06</span>
+          <span class="frame-tag">RESOLUTION</span>
+        </div>
+        <div class="frame-visual">
+          <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="sunGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#f0d080"/>
+                <stop offset="40%" stop-color="#e8a020" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#1a2030" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="320" height="180" fill="#0d1825"/>
+            <!-- Sun rays -->
+            <circle cx="160" cy="60" r="80" fill="url(#sunGrad)" opacity="0.9"/>
+            <circle cx="160" cy="60" r="35" fill="#f0d080" opacity="0.9"/>
+            <circle cx="160" cy="60" r="22" fill="white" opacity="0.95"/>
+            <!-- Ray lines -->
+            <line x1="160" y1="0" x2="160" y2="25" stroke="#f0d080" stroke-width="3" opacity="0.6"/>
+            <line x1="205" y1="15" x2="190" y2="35" stroke="#f0d080" stroke-width="3" opacity="0.6"/>
+            <line x1="232" y1="60" x2="210" y2="60" stroke="#f0d080" stroke-width="3" opacity="0.6"/>
+            <line x1="115" y1="15" x2="130" y2="35" stroke="#f0d080" stroke-width="3" opacity="0.6"/>
+            <line x1="88" y1="60" x2="110" y2="60" stroke="#f0d080" stroke-width="3" opacity="0.6"/>
+            <!-- Silhouette landscape -->
+            <rect x="0" y="130" width="320" height="50" fill="#0a1018"/>
+            <path d="M0,130 Q80,100 160,125 Q240,100 320,130 L320,180 L0,180Z" fill="#0d1520"/>
+            <!-- Figure on horizon -->
+            <circle cx="160" cy="122" r="7" fill="#0a1018"/>
+            <rect x="156" y="129" width="8" height="18" rx="2" fill="#0a1018"/>
+            <!-- Fade out text -->
+            <text x="50" y="170" font-family="monospace" font-size="11" fill="#e8a020" opacity="0.8" text-anchor="middle">E N D</text>
+            <text x="8" y="178" font-family="monospace" font-size="9" fill="#e8a020" opacity="0.9">WS. SUNRISE — RESOLUTION / FADE</text>
+          </svg>
+        </div>
+        <div class="frame-body">
+          <div class="frame-scene-title">The Resolution: Dawn</div>
+          <div class="frame-desc">Wide shot at sunrise. The protagonist stands at the horizon. Warm light floods the frame as the narrative arc reaches its conclusion.</div>
+        </div>
+        <div class="frame-meta">
+          <span>⏱ 0:28–0:35</span>
+          <span>📷 Wide</span>
+          <span>🎵 Resolution</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- KEY FOCUS AREAS -->
+  <section>
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Key Focus Areas</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="focus-grid">
+      <div class="focus-card">
+        <span class="focus-num">01</span>
+        <div class="focus-icon-wrap">🎬</div>
+        <div class="focus-title">Scene Breakdown</div>
+        <p class="focus-text">Every concept is deconstructed into individual visual beats. We map the emotional arc, camera movement, and narrative purpose for each frame before a single line is drawn.</p>
+      </div>
+      <div class="focus-card">
+        <span class="focus-num">02</span>
+        <div class="focus-icon-wrap">✦</div>
+        <div class="focus-title">Sequence Design</div>
+        <p class="focus-text">Compelling visual sequences for video, animation, and user flows. Transitions are crafted to carry emotional weight — not just connect scenes, but amplify them.</p>
+      </div>
+      <div class="focus-card">
+        <span class="focus-num">03</span>
+        <div class="focus-icon-wrap">🤝</div>
+        <div class="focus-title">Creative Collaboration</div>
+        <p class="focus-text">Deep integration with content creators and animators. Storyboards become shared language — a visual contract that aligns the team before production begins.</p>
+      </div>
+      <div class="focus-card">
+        <span class="focus-num">04</span>
+        <div class="focus-icon-wrap">🗺</div>
+        <div class="focus-title">User Journey Mapping</div>
+        <p class="focus-text">Beyond film — we visualize digital experiences. Each screen, interaction, and micro-moment is mapped as a frame in the larger story of user behavior and product flow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section class="tools-section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Tools of the Trade</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="tools-row">
+      <div class="tool-card">
+        <div class="tool-dot"></div>
+        <span class="tool-icon">📋</span>
+        <div class="tool-name">STORYBOARD THAT</div>
+        <div class="tool-type">Rapid Prototyping</div>
+        <p class="tool-desc">Drag-and-drop storyboard creation with pre-built characters, scenes, and props. Ideal for fast iteration and client-facing presentations.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-dot"></div>
+        <span class="tool-icon">⬡</span>
+        <div class="tool-name">ILLUSTRATOR</div>
+        <div class="tool-type">Vector Illustration</div>
+        <p class="tool-desc">Precise vector-based frame illustration. Perfect for scalable storyboards that need to maintain quality across presentation formats.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-dot"></div>
+        <span class="tool-icon">◉</span>
+        <div class="tool-name">PHOTOSHOP</div>
+        <div class="tool-type">Compositing & Textures</div>
+        <p class="tool-desc">Photo-real compositing for complex scenes. Used when frames need cinematic depth, lighting studies, or photographic reference blending.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-dot"></div>
+        <span class="tool-icon">✏</span>
+        <div class="tool-name">PROCREATE</div>
+        <div class="tool-type">Gesture Drawing</div>
+        <p class="tool-desc">Freehand digital sketching with pressure sensitivity. The fastest tool for raw idea capture — where storyboard thinking becomes visible in real time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- USER JOURNEY FLOW -->
+  <section class="journey-section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">User Journey Flow</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="journey-flow">
+      <div class="journey-step">
+        <div class="journey-step-top">
+          <div class="step-circle">1</div>
+          <div class="step-name">BRIEF &amp; CONCEPT</div>
+        </div>
+        <div class="journey-step-body">
+          <p class="step-desc">Receive the creative brief. Extract core narrative goals, audience, tone, and deliverables. Define the visual language early.</p>
+          <span class="step-badge">Discovery</span>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-top">
+          <div class="step-circle">2</div>
+          <div class="step-name">THUMBNAIL SKETCHES</div>
+        </div>
+        <div class="journey-step-body">
+          <p class="step-desc">Rapid thumbnail pass — loose, fast, exploratory. The goal is quantity over quality. Generate 20+ frame ideas to find the 6 that matter.</p>
+          <span class="step-badge">Ideation</span>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-top">
+          <div class="step-circle">3</div>
+          <div class="step-name">REFINED FRAMES</div>
+        </div>
+        <div class="journey-step-body">
+          <p class="step-desc">Polish the selected thumbnails. Add camera direction, character poses, lighting mood, and annotated descriptions for each scene.</p>
+          <span class="step-badge">Production</span>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-top">
+          <div class="step-circle">4</div>
+          <div class="step-name">REVIEW &amp; ITERATE</div>
+        </div>
+        <div class="journey-step-body">
+          <p class="step-desc">Present to stakeholders, directors, and animators. Collect structured feedback. Revise frames that don't serve the narrative arc.</p>
+          <span class="step-badge">Collaboration</span>
+        </div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-step-top">
+          <div class="step-circle">5</div>
+          <div class="step-name">FINAL HANDOFF</div>
+        </div>
+        <div class="journey-step-body">
+          <p class="step-desc">Deliver production-ready storyboard package. Includes frame sequences, timing notes, transition cues, and animation briefs.</p>
+          <span class="step-badge">Delivery</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">STORYBOARD STUDIO</div>
+    <div class="footer-tagline">Visual Narrative Design System</div>
+  </div>
+  <div class="footer-right">
+    <p>TOOLS ▸ Storyboard That · Adobe Illustrator · Photoshop · Procreate</p>
+    <p>SCOPE ▸ Video · Animation · UX Flows · Brand Narrative</p>
+    <p>TEAM ▸ Designers · Animators · Content Creators</p>
+  </div>
+</footer>
+
+</body>
+</html>
